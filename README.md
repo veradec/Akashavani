@@ -1,55 +1,69 @@
-# Akasavani
 
-A modern Android application built with Kotlin.
+<p align="center">
+  <img src="ico.png" alt="Akasavani Logo" width="100" />
+</p>
 
-## Features
+<h1 align="center">Akasavani 📻</h1>
 
-- Modern Android architecture
-- Kotlin-first approach
-- Material Design components
-- Clean architecture principles
+<p align="center">
+  A simple and elegant Android app to stream multiple Telugu radio stations online. <br />
+  Built with ❤️ in Kotlin.
+</p>
 
-## Requirements
+<p align="center">
+  <a href="https://github.com/GlitchMill/Akashavani"><strong>View on GitHub »</strong></a>
+</p>
 
-- Android Studio Hedgehog | 2023.1.1 or newer
-- Kotlin 1.9.0 or newer
-- Android SDK 34 or newer
-- Gradle 8.0 or newer
+---
 
-## Getting Started
+## 🎧 Features
 
-1. Clone the repository:
+- 🎙️ Stream live Telugu radio stations
+- 📱 Native Android app using Kotlin
+- 🕶️ Clean and minimal UI
+- ⚡ Lightweight and fast
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Android Studio (latest stable version recommended)
+- Kotlin support enabled
+- An Android device or emulator (API 21+)
+
+### Clone the repo
+
 ```bash
 git clone https://github.com/GlitchMill/Akashavani.git
 ```
 
-2. Open the project in Android Studio
+### Build & Run
 
-3. Sync the project with Gradle files
+1. Open the project in Android Studio.
+2. Let Gradle sync and build the project.
+3. Run on an emulator or your Android device.
 
-4. Run the application on your device or emulator
 
-## Project Structure
+## 🤝 Contributing
 
-```
-app/
-├── src/
-│   ├── main/
-│   │   ├── java/        # Kotlin source files
-│   │   ├── res/         # Resources (layouts, drawables, etc.)
-│   │   └── AndroidManifest.xml
-│   └── test/           # Unit tests
-└── build.gradle.kts    # App-level build configuration
-```
+Contributions are welcome! If you'd like to:
 
-## Contributing
+- Add more Telugu radio stations
+- Improve the UI/UX
+- Fix bugs or optimize playback
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Feel free to fork the repo and open a pull request.
 
-## License
+## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
+This project is open source and available under the [MIT License](LICENSE).
+
+## 🙏 Acknowledgements
+
+- All the Telugu radio stations that make this project possible
+- Android and Kotlin developer communities
+
+---
+
+<p align="center">🎶 Bringing Telugu radio to your fingertips — <strong>Akasavani</strong></p>
+
