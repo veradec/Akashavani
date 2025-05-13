@@ -1,4 +1,4 @@
-# OnRad
+# Akasavani
 
 A modern Android application built with Kotlin.
 
@@ -20,7 +20,7 @@ A modern Android application built with Kotlin.
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/on_rad.git
+git clone https://github.com/GlitchMill/Akashavani.git
 ```
 
 2. Open the project in Android Studio
