@@ -12,9 +12,14 @@ data class RadioStation(
     val isAccessible: Boolean = true
 ) : Parcelable
 
+@Parcelize
+data class RadioStationGroup(
+    val name: String,
+    val stations: List<RadioStation>
+) : Parcelable
+
 object RadioStations {
-    val stations = listOf(
-        // All India Radio (AIR) Stations
+    private val airStations = listOf(
         RadioStation(
             name = "AIR Telugu",
             streamUrl = "https://air.pc.cdn.bitgravity.com/air/live/pbaudio032/playlist.m3u8"
@@ -71,8 +76,17 @@ object RadioStations {
             name = "AIR Simhapuri FM",
             streamUrl = "https://air.pc.cdn.bitgravity.com/air/live/pbaudio168/playlist.m3u8"
         ),
+        RadioStation(
+            name = "AIR Vishakapatnam",
+            streamUrl = "https://air.pc.cdn.bitgravity.com/air/live/pbaudio080/playlist.m3u8"
+        ),
+        RadioStation(
+            name = "AIR Adilabad",
+            streamUrl = "https://air.pc.cdn.bitgravity.com/air/live/pbaudio218/playlist.m3u8"
+        )
+    )
 
-        // AIR Rainbow Stations
+    private val airRainbowStations = listOf(
         RadioStation(
             name = "AIR Rainbow Hyderabad",
             streamUrl = "https://air.pc.cdn.bitgravity.com/air/live/pbaudio031/playlist.m3u8"
@@ -84,9 +98,10 @@ object RadioStations {
         RadioStation(
             name = "AIR Rainbow Vijayawada",
             streamUrl = "https://air.pc.cdn.bitgravity.com/air/live/pbaudio174/playlist.m3u8"
-        ),
+        )
+    )
 
-        // Vividh Bharati Stations
+    private val vividhBharatiStations = listOf(
         RadioStation(
             name = "Vividh Bharati Hyderabad",
             streamUrl = "https://air.pc.cdn.bitgravity.com/air/live/pbaudio034/playlist.m3u8"
@@ -94,9 +109,10 @@ object RadioStations {
         RadioStation(
             name = "Vividh Bharati Vijayawada",
             streamUrl = "https://air.pc.cdn.bitgravity.com/air/live/pbaudio176/playlist.m3u8"
-        ),
+        )
+    )
 
-        // Private Radio Stations
+    private val privateStations = listOf(
         RadioStation(
             name = "Radio Mirchi 98.3 FM Hyderabad",
             streamUrl = "https://17653.live.streamtheworld.com/NJS_HIN_ESTAAC/HLS/playlist.m3u8"
@@ -112,16 +128,6 @@ object RadioStations {
         RadioStation(
             name = "Radio Mirchi Bay Area Telugu",
             streamUrl = "https://17653.live.streamtheworld.com/MTL_TEL_ESTAAC/HLS/playlist.m3u8"
-        ),
-
-        // Existing stations
-        RadioStation(
-            name = "All India Radio Vishakapatnam",
-            streamUrl = "https://air.pc.cdn.bitgravity.com/air/live/pbaudio080/playlist.m3u8"
-        ),
-        RadioStation(
-            name = "All India Radio Adilabad",
-            streamUrl = "https://air.pc.cdn.bitgravity.com/air/live/pbaudio218/playlist.m3u8"
         ),
         RadioStation(
             name = "Telugu NRI Radio",
@@ -149,5 +155,12 @@ object RadioStations {
             name = "Radio Hungama",
             streamUrl = "https://stream.zeno.fm/ysucrq37uwzuv"
         )
+    )
+
+    val stationGroups = listOf(
+        RadioStationGroup("All India Radio", airStations),
+        RadioStationGroup("AIR Rainbow", airRainbowStations),
+        RadioStationGroup("Vividh Bharati", vividhBharatiStations),
+        RadioStationGroup("Private Stations", privateStations)
     )
 } 

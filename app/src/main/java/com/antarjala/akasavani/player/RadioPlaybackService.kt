@@ -49,13 +49,14 @@ class RadioPlaybackService : Service(), AudioManager.OnAudioFocusChangeListener 
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         try {
+            // Start foreground immediately with a basic notification
+            startForeground(NOTIFICATION_ID, createNotification(null))
+            
             when (intent?.action) {
                 ACTION_PLAY -> {
                     val station = intent.getParcelableExtra<RadioStation>(EXTRA_STATION)
                     station?.let { 
                         currentStation = it
-                        // Start foreground immediately with a basic notification
-                        startForeground(NOTIFICATION_ID, createNotification(it))
                         playRadio(it)
                     }
                 }

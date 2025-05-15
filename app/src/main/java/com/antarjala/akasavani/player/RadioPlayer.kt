@@ -47,7 +47,7 @@ class RadioPlayer(private val context: Context) {
 
     init {
         try {
-            initializePlayer()
+        initializePlayer()
             registerHeadphoneReceiver()
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing RadioPlayer", e)
@@ -65,20 +65,20 @@ class RadioPlayer(private val context: Context) {
 
     private fun initializePlayer() {
         try {
-            player = ExoPlayer.Builder(context).build().apply {
-                repeatMode = Player.REPEAT_MODE_OFF
-                addListener(object : Player.Listener {
-                    override fun onPlaybackStateChanged(state: Int) {
+        player = ExoPlayer.Builder(context).build().apply {
+            repeatMode = Player.REPEAT_MODE_OFF
+            addListener(object : Player.Listener {
+                override fun onPlaybackStateChanged(state: Int) {
                         try {
-                            _isPlaying = state == Player.STATE_READY && player?.isPlaying == true
+                    _isPlaying = state == Player.STATE_READY && player?.isPlaying == true
                         } catch (e: Exception) {
                             Log.e(TAG, "Error in onPlaybackStateChanged", e)
                         }
-                    }
+                }
 
-                    override fun onIsPlayingChanged(playing: Boolean) {
+                override fun onIsPlayingChanged(playing: Boolean) {
                         try {
-                            _isPlaying = playing
+                    _isPlaying = playing
                         } catch (e: Exception) {
                             Log.e(TAG, "Error in onIsPlayingChanged", e)
                         }
@@ -87,8 +87,8 @@ class RadioPlayer(private val context: Context) {
                     override fun onPlayerError(error: com.google.android.exoplayer2.PlaybackException) {
                         Log.e(TAG, "Player error: ${error.message}", error)
                         _isPlaying = false
-                    }
-                })
+                }
+            })
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing ExoPlayer", e)
@@ -98,26 +98,26 @@ class RadioPlayer(private val context: Context) {
 
     fun togglePlayPause(station: RadioStation) {
         try {
-            if (currentStation == station) {
-                if (_isPlaying) {
+        if (currentStation == station) {
+            if (_isPlaying) {
                     pause()
                     context.stopService(Intent(context, RadioPlaybackService::class.java))
-                } else {
+            } else {
                     play()
                     startPlaybackService(station)
-                }
-                return
             }
+            return
+        }
 
-            // If it's a different station, stop current and start new
-            player?.stop()
-            currentStation = station
-            _isPlaying = true
+        // If it's a different station, stop current and start new
+        player?.stop()
+        currentStation = station
+        _isPlaying = true
 
-            val mediaItem = MediaItem.fromUri(station.streamUrl)
-            player?.setMediaItem(mediaItem)
-            player?.prepare()
-            player?.play()
+        val mediaItem = MediaItem.fromUri(station.streamUrl)
+        player?.setMediaItem(mediaItem)
+        player?.prepare()
+        player?.play()
             startPlaybackService(station)
         } catch (e: Exception) {
             Log.e(TAG, "Error in togglePlayPause", e)
@@ -156,10 +156,10 @@ class RadioPlayer(private val context: Context) {
 
     fun release() {
         try {
-            player?.release()
-            player = null
-            currentStation = null
-            _isPlaying = false
+        player?.release()
+        player = null
+        currentStation = null
+        _isPlaying = false
             context.stopService(Intent(context, RadioPlaybackService::class.java))
             try {
                 context.unregisterReceiver(headphoneReceiver)
