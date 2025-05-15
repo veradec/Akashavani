@@ -9,7 +9,8 @@ data class RadioStation(
     val streamUrl: String,
     val needsHeaders: Boolean = false,
     val headers: Map<String, String> = emptyMap(),
-    val isAccessible: Boolean = true
+    val isAccessible: Boolean = true,
+    val isFavorite: Boolean = false
 ) : Parcelable
 
 @Parcelize

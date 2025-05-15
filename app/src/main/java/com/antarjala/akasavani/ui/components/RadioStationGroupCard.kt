@@ -21,6 +21,7 @@ fun RadioStationGroupCard(
     currentStation: RadioStation?,
     isPlaying: Boolean,
     onStationClick: (RadioStation) -> Unit,
+    onFavoriteChange: (RadioStation, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -30,29 +31,31 @@ fun RadioStationGroupCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column {
-            // Group header
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = group.name,
-                    style = MaterialTheme.typography.titleLarge
-                )
-                IconButton(onClick = { expanded = !expanded }) {
-                    Icon(
-                        imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                        contentDescription = if (expanded) "Collapse" else "Expand"
+            // Group header (only show if group has a name)
+            if (group.name.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = group.name,
+                        style = MaterialTheme.typography.titleLarge
                     )
+                    IconButton(onClick = { expanded = !expanded }) {
+                        Icon(
+                            imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                            contentDescription = if (expanded) "Collapse" else "Expand"
+                        )
+                    }
                 }
             }
 
             // Station list
             AnimatedVisibility(
-                visible = expanded,
+                visible = expanded || group.name.isEmpty(),
                 enter = expandVertically(),
                 exit = shrinkVertically()
             ) {
@@ -64,6 +67,7 @@ fun RadioStationGroupCard(
                             station = station,
                             isPlaying = station == currentStation && isPlaying,
                             onPlayClick = { onStationClick(station) },
+                            onFavoriteChange = { isFavorite -> onFavoriteChange(station, isFavorite) },
                             modifier = Modifier.padding(vertical = 4.dp)
                         )
                     }
