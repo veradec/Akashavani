@@ -1,8 +1,12 @@
 package com.antarjala.akasavani.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
@@ -18,57 +22,70 @@ import com.antarjala.akasavani.data.RadioStationGroup
 @Composable
 fun RadioStationGroupCard(
     group: RadioStationGroup,
-    currentStation: RadioStation?,
-    isPlaying: Boolean,
+    currentStation: RadioStation? = null,
+    isPlaying: Boolean = false,
     onStationClick: (RadioStation) -> Unit,
     onFavoriteChange: (RadioStation, Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    isExpanded: Boolean = false
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(isExpanded) }
+
+    // Update expanded state when isExpanded parameter changes
+    LaunchedEffect(isExpanded) {
+        expanded = isExpanded
+    }
 
     Card(
-        modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
-        Column {
-            // Group header (only show if group has a name)
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
             if (group.name.isNotEmpty()) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .clickable { expanded = !expanded },
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = group.name,
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleMedium
                     )
-                    IconButton(onClick = { expanded = !expanded }) {
-                        Icon(
-                            imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                            contentDescription = if (expanded) "Collapse" else "Expand"
-                        )
-                    }
+                    Icon(
+                        imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                        contentDescription = if (expanded) "Collapse" else "Expand"
+                    )
                 }
             }
 
-            // Station list
             AnimatedVisibility(
                 visible = expanded || group.name.isEmpty(),
-                enter = expandVertically(),
-                exit = shrinkVertically()
+                enter = expandVertically(
+                    animationSpec = tween(300)
+                ) + fadeIn(
+                    animationSpec = tween(300)
+                ),
+                exit = shrinkVertically(
+                    animationSpec = tween(300)
+                ) + fadeOut(
+                    animationSpec = tween(300)
+                )
             ) {
                 Column(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    modifier = Modifier.padding(top = if (group.name.isNotEmpty()) 8.dp else 0.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     group.stations.forEach { station ->
                         RadioStationCard(
                             station = station,
                             isPlaying = station == currentStation && isPlaying,
                             onPlayClick = { onStationClick(station) },
-                            onFavoriteChange = { isFavorite -> onFavoriteChange(station, isFavorite) },
-                            modifier = Modifier.padding(vertical = 4.dp)
+                            onFavoriteChange = { isFavorite -> onFavoriteChange(station, isFavorite) }
                         )
                     }
                 }
