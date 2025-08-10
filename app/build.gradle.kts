@@ -21,10 +21,19 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file(System.getenv("KEYSTORE_PATH") ?: "keystore.jks")
+            val keystorePath = System.getenv("KEYSTORE_PATH")
+            println("KEYSTORE_PATH environment variable: $keystorePath")
+            if (keystorePath != null) {
+                storeFile = file(keystorePath)
+                println("Using keystore at: ${file(keystorePath).absolutePath}")
+            } else {
+                storeFile = project.rootProject.file("keystore.jks")
+                println("Using default keystore at: ${project.rootProject.file("keystore.jks").absolutePath}")
+            }
             storePassword = System.getenv("KEYSTORE_PASSWORD")
             keyAlias = System.getenv("KEY_ALIAS")
             keyPassword = System.getenv("KEY_PASSWORD")
+            println("Signing config created with alias: $keyAlias")
         }
     }
 

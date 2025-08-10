@@ -24,10 +24,19 @@ jobs:
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      - name: Verify Keystore
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Keystore path: ${{ github.workspace }}/keystore.jks"
+          ls -la keystore.jks
+          echo "Environment variables:"
+          echo "KEYSTORE_PATH: ${{ github.workspace }}/keystore.jks"
+          echo "KEYSTORE_PASSWORD: [HIDDEN]"
+          echo "KEY_ALIAS: ${{ secrets.KEY_ALIAS }}"
       - name: Build with Gradle
         run: ./gradlew assembleRelease
         env:
-          KEYSTORE_PATH: keystore.jks
+          KEYSTORE_PATH: ${{ github.workspace }}/keystore.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
@@ -58,12 +67,22 @@ jobs:
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
+      - name: Verify Keystore
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Keystore path: ${{ github.workspace }}/keystore.jks"
+          ls -la keystore.jks
+          echo "Environment variables:"
+          echo "KEYSTORE_PATH: ${{ github.workspace }}/keystore.jks"
+          echo "KEYSTORE_PASSWORD: [HIDDEN]"
+          echo "KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+
       - name: Build Release APK
         run: |
           chmod +x gradlew
           ./gradlew assembleRelease
         env:
-          KEYSTORE_PATH: keystore.jks
+          KEYSTORE_PATH: ${{ github.workspace }}/keystore.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
