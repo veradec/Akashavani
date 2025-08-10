@@ -75,7 +75,7 @@ jobs:
           echo "Environment variables:"
           echo "KEYSTORE_PATH: ${{ github.workspace }}/keystore.jks"
           echo "KEYSTORE_PASSWORD: [HIDDEN]"
-          echo "KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          echo "KEY_ALIAS: ${{ secrets.KEY_ALIAS }}"
 
       - name: Build Release APK
         run: |
