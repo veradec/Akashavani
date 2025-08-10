@@ -1,58 +1,101 @@
-name: Android Release
+name: Android CI
 
 on:
   push:
-    branches: [ main ]
-    tags:
-      - 'v*'
-  workflow_dispatch:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
-
-      - name: Decode Keystore
-        env:
-          ENCODED_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 }}
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+      - name: Create Keystore File
         run: |
-          echo $ENCODED_KEYSTORE | base64 -d > app/keystore.jks
-
-      - name: Build Release APK
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
         env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      - name: Build with Gradle
+        run: ./gradlew assembleRelease
+        env:
+          KEYSTORE_PATH: keystore.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          ./gradlew assembleRelease
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v3
-        with:
-          name: app-release
-          path: app/build/outputs/apk/release/app-release.apk
+      - name: Clean Up Keystore
+        run: rm -f keystore.jks
 
   release:
     needs: build
-    if: startsWith(github.ref, 'refs/tags/')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
         with:
-          name: app-release
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Create Keystore File
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
+      - name: Build Release APK
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease
+        env:
+          KEYSTORE_PATH: keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Clean Up Keystore
+        run: rm -f keystore.jks
+
+      - name: Calculate Version
+        id: version
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          VERSION=${LATEST_TAG#v}
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+          NEW_PATCH=$((PATCH + 1))
+          echo "NEW_VERSION=v$MAJOR.$MINOR.$NEW_PATCH" >> $GITHUB_ENV
+          echo "APK_NAME=vihla-release-unsigned-$MAJOR.$MINOR.$NEW_PATCH.apk" >> $GITHUB_ENV
+          echo "RELEASE_TITLE=Release Version $MAJOR.$MINOR.$NEW_PATCH" >> $GITHUB_ENV
+
+      - name: Verify and Rename APK
+        run: |
+          if [ -f "app/build/outputs/apk/release/app-release-unsigned.apk" ]; then
+            mv app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/${{ env.APK_NAME }}
+          else
+            echo "APK not found at app/build/outputs/apk/release/app-release-unsigned.apk"
+            ls -R app/build/outputs/apk/
+            exit 1
+          fi
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: app-release.apk
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          tag_name: ${{ env.NEW_VERSION }}
+          name: ${{ env.RELEASE_TITLE }}
+          files: |
+            app/build/outputs/apk/release/${{ env.APK_NAME }}
